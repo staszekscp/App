@@ -38,7 +38,7 @@ platform :android do
   
   desc "Build app for testing"
   lane :test_return do 
-    sh('echo "{\"apk_path\": \"https://supercoolurl.com\",\"html_path\": \"https://supercoolurl.com\"}" > ../process.json')
+    sh('echo "{\"apk_path\": \"https://supercoolurl.com\",\"html_path\": \"https://supercoolurl.com\"}" > ../paths.json')
   end
 
   desc "Build app for testing"

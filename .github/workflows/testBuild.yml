@@ -58,35 +58,34 @@ jobs:
         #   S3_BUCKET: ad-hoc-expensify-cash
         #   S3_REGION: us-east-1
       
+      - uses: actions/upload-artifact@v2
+        with:
+          name: paths
+          path: ./process.json
+      
+
+  postGithubComment:
+    runs-on: ubuntu-latest
+    name: An example job to comment a PR
+    needs: [android]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: paths
+
       - id: set_var
         run: |
-          content=`cat ./process.json`
+          content=`cat ./paths.json`
           content="${content//'%'/'%25'}"
           content="${content//$'\n'/'%0A'}"
           content="${content//$'\r'/'%0D'}"
-          echo "::set-output name=packageJson::$content"
+          echo "::set-output name=paths::$content"
 
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: |
-            'Hello world ! ${{fromJson(steps.set_var.outputs.packageJson).html_path}}'
-
-  # postGithubComment:
-  #   runs-on: ubuntu-latest
-  #   name: An example job to comment a PR
-  #   needs: [android]
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-
-  #     - id: set_var
-  #       run: |
-  #         content=`cat ./process.json`
-  #         echo "::set-output name=packageJson::$content"
-
-  #     - name: Comment PR
-  #       uses: thollander/actions-comment-pull-request@v1
-  #       with:
-  #         message: |
-  #           Hello world ! ${{fromJSON(steps.set_var.outputs.html_path)}}
+            'Hello world ! ${{fromJson(steps.set_var.outputs.paths).html_path}}'
