@@ -28,9 +28,9 @@ jobs:
   android:
     name: Build and deploy Android
     # needs: validateActor
-    outputs:
+    # outputs:
       # APK_PATH: ${{ fromJSON(steps.runFastlaneBetaTest.outputs.apk_path) }}
-      HTML_PATH: ${{ fromJSON(steps.runFastlaneBetaTest.outputs) }}
+      # HTML_PATH: ${{ fromJSON(steps.runFastlaneBetaTest.outputs) }}
     # if: ${{ fromJSON(needs.validateActor.outputs.IS_DEPLOYER) }}
     runs-on: ubuntu-latest
     steps:
