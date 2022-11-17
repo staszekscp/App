@@ -61,7 +61,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: paths.json
-          path: ./process.json
+          path: ./paths.json
       
 
   postGithubComment:
