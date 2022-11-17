@@ -68,8 +68,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - id: set_var
+        run: |
+          content=`cat ../../process.json`
+          echo "::set-output name=packageJson::$content"
+
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: |
-            Hello world ! ${{fromJSON(needs.android.outputs.HTML_PATH)}}
+            Hello world ! ${{fromJSON(steps.set_var.outputs.html_path)}}
