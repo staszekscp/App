@@ -37,10 +37,7 @@ platform :android do
   end
 
   lane :test_return do 
-    {
-      apk_path: 'lane_context[SharedValues::S3_APK_OUTPUT_PATH]',
-      html_path: 'lane_context[SharedValues::S3_HTML_OUTPUT_PATH]'
-    }
+    1
   end
 
   desc "Build app for testing"
