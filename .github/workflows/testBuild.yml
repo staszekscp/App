@@ -65,14 +65,13 @@ jobs:
       - id: set_var
         run: |
           content=`cat ./process.json`
-          ls
           echo "::set-output name=packageJson::$content"
 
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: |
-            Hello world ! fromJson(steps.set_var.outputs.packageJson).html_path}}
+            Hello world ! ${{fromJson(steps.set_var.outputs.packageJson).html_path}}}}
 
   # postGithubComment:
   #   runs-on: ubuntu-latest
