@@ -64,6 +64,9 @@ jobs:
       - id: set_var
         run: |
           content=`cat ./process.json`
+          content="${content//'%'/'%25'}"
+          content="${content//$'\n'/'%0A'}"
+          content="${content//$'\r'/'%0D'}"
           echo "::set-output name=packageJson::$content"
 
       - name: Comment PR
