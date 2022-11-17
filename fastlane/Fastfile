@@ -35,11 +35,6 @@ platform :android do
       build_type: 'Release',
     )
   end
-  
-  desc "Build app for testing"
-  lane :test_return do 
-    sh('echo "{\"apk_path\": \"https://supercoolurl.com\",\"html_path\": \"https://supercoolurl.com\"}" > ../paths.json')
-  end
 
   desc "Build app for testing"
   lane :build_test do
@@ -52,14 +47,13 @@ platform :android do
     )
 
     aws_s3(
-      access_key: ENV['S3_ACCESS_KEY'],               # Optional - defaults to AWS Instance Profile Creds.
-      secret_access_key: ENV['S3_SECRET_ACCESS_KEY'], # Optional - defaults to AWS Instance Profile Creds.
-      bucket: ENV['S3_BUCKET'],                       # Required from user.
-      region: ENV['S3_REGION'],                       # Required from user.
+      access_key: ENV['S3_ACCESS_KEY'],              
+      secret_access_key: ENV['S3_SECRET_ACCESS_KEY'], 
+      bucket: ENV['S3_BUCKET'],                       
+      region: ENV['S3_REGION'],                      
 
-      apk: 'expensify_test.apk',                      # Required (if not uploading an IPA).
-
-      app_directory: 'android',                       # Optional but nice if you want to put multiple apps in same bucket
+      apk: 'expensify_test.apk',                      
+      app_directory: 'android',                      
     )
 
     sh('echo "{\"apk_path\": \"${lane_context[SharedValues::S3_APK_OUTPUT_PATH]}\",\"html_path\": \"${lane_context[SharedValues::S3_HTML_OUTPUT_PATH]}\"}" > ../paths.json')

@@ -1,4 +1,4 @@
-name: Build and deploy android, desktop, iOS, and web clients for testing
+name: Build and deploy apps for testing
 
 on:
   workflow_dispatch:
@@ -10,25 +10,22 @@ env:
   DEVELOPER_DIR: /Applications/Xcode_14.0.1.app/Contents/Developer
 
 jobs:
-  # validateActor:
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     IS_DEPLOYER: ${{ fromJSON(steps.isUserDeployer.outputs.isTeamMember) || github.actor == 'OSBotify' }}
-  #   steps:
-  #     - id: isUserDeployer
-  #       uses: tspascoal/get-user-teams-membership@baf2e6adf4c3b897bd65a7e3184305c165aec872
-  #       with:
-  #         GITHUB_TOKEN: ${{ secrets.OS_BOTIFY_TOKEN }}
-  #         username: ${{ github.actor }}
-  #         team: mobile-deployers
+  validateActor:
+    runs-on: ubuntu-latest
+    outputs:
+      IS_DEPLOYER: ${{ fromJSON(steps.isUserDeployer.outputs.isTeamMember) || github.actor == 'OSBotify' }}
+    steps:
+      - id: isUserDeployer
+        uses: tspascoal/get-user-teams-membership@baf2e6adf4c3b897bd65a7e3184305c165aec872
+        with:
+          GITHUB_TOKEN: ${{ secrets.OS_BOTIFY_TOKEN }}
+          username: ${{ github.actor }}
+          team: mobile-deployers
 
   android:
     name: Build and deploy Android
-    # needs: validateActor
-    # outputs:
-      # APK_PATH: ${{ fromJSON(steps.runFastlaneBetaTest.outputs.apk_path) }}
-      # HTML_PATH: ${{ fromJSON(steps.runFastlaneBetaTest.outputs) }}
-    # if: ${{ fromJSON(needs.validateActor.outputs.IS_DEPLOYER) }}
+    needs: validateActor
+    if: ${{ fromJSON(needs.validateActor.outputs.IS_DEPLOYER) }}
     runs-on: ubuntu-latest
     steps:
 
@@ -39,24 +36,24 @@ jobs:
           ruby-version: '2.7'
           bundler-cache: true
 
-      # - name: Decrypt keystore
-      #   run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output my-upload-key.keystore my-upload-key.keystore.gpg
-      #   env:
-      #     LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
+      - name: Decrypt keystore
+        run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output my-upload-key.keystore my-upload-key.keystore.gpg
+        env:
+          LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
 
-      # - name: Decrypt json key
-      #   run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output android-fastlane-json-key.json android-fastlane-json-key.json.gpg
-      #   env:
-      #     LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
+      - name: Decrypt json key
+        run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output android-fastlane-json-key.json android-fastlane-json-key.json.gpg
+        env:
+          LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
 
       - name: Run Fastlane beta test
         id: runFastlaneBetaTest
         run: bundle exec fastlane android test_return
-        # env:
-        #   S3_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        #   S3_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        #   S3_BUCKET: ad-hoc-expensify-cash
-        #   S3_REGION: us-east-1
+        env:
+          S3_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          S3_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          S3_BUCKET: ad-hoc-expensify-cash
+          S3_REGION: us-east-1
       
       - uses: actions/upload-artifact@v2
         with:
