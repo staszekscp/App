@@ -35,12 +35,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      # - uses: Expensify/App/.github/actions/composite/setupNode@main
+      - uses: Expensify/App/.github/actions/composite/setupNode@main
 
-      # - uses: ruby/setup-ruby@eae47962baca661befdfd24e4d6c34ade04858f7
-      #   with:
-      #     ruby-version: '2.7'
-      #     bundler-cache: true
+      - uses: ruby/setup-ruby@eae47962baca661befdfd24e4d6c34ade04858f7
+        with:
+          ruby-version: '2.7'
+          bundler-cache: true
 
       # - name: Decrypt keystore
       #   run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output my-upload-key.keystore my-upload-key.keystore.gpg
