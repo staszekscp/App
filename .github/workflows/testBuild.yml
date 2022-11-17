@@ -1,0 +1,75 @@
+name: Build and deploy android, desktop, iOS, and web clients for testing
+
+on:
+  workflow_dispatch:
+  # pull_request:
+  # types: [opened, synchronize]
+
+env:
+  SHOULD_DEPLOY_PRODUCTION: ${{ github.event_name == 'release' }}
+  DEVELOPER_DIR: /Applications/Xcode_14.0.1.app/Contents/Developer
+
+jobs:
+  validateActor:
+    runs-on: ubuntu-latest
+    outputs:
+      IS_DEPLOYER: ${{ fromJSON(steps.isUserDeployer.outputs.isTeamMember) || github.actor == 'OSBotify' }}
+    steps:
+      - id: isUserDeployer
+        uses: tspascoal/get-user-teams-membership@baf2e6adf4c3b897bd65a7e3184305c165aec872
+        with:
+          GITHUB_TOKEN: ${{ secrets.OS_BOTIFY_TOKEN }}
+          username: ${{ github.actor }}
+          team: mobile-deployers
+
+  android:
+    name: Build and deploy Android
+    needs: validateActor
+    outputs:
+      APK_PATH: ${{ fromJSON(steps.runFastlaneBetaTest.outputs.apk_path) }}
+      HTML_PATH: ${{ fromJSON(steps.runFastlaneBetaTest.outputs.html_path) }}
+    if: ${{ fromJSON(needs.validateActor.outputs.IS_DEPLOYER) }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Expensify/App/.github/actions/composite/setupNode@main
+
+      - uses: ruby/setup-ruby@eae47962baca661befdfd24e4d6c34ade04858f7
+        with:
+          ruby-version: '2.7'
+          bundler-cache: true
+
+      - name: Decrypt keystore
+        run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output my-upload-key.keystore my-upload-key.keystore.gpg
+        env:
+          LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
+
+      - name: Decrypt json key
+        run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output android-fastlane-json-key.json android-fastlane-json-key.json.gpg
+        env:
+          LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
+
+      # - name: Set version in ENV
+      #   run: echo "VERSION_CODE=$(grep -o 'versionCode\s\+[0-9]\+' android/app/build.gradle | awk '{ print $2 }')" >> "$GITHUB_ENV"
+
+      - name: Run Fastlane beta test
+        id: runFastlaneBetaTest
+        run: bundle exec fastlane android build_test
+        env:
+          S3_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          S3_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          S3_BUCKET: ad-hoc-expensify-cash
+          S3_REGION: us-east-1
+
+      # - name: Archive Android sourcemaps
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: android-sourcemap
+      #     path: android/app/build/generated/sourcemaps/react/release/*.map
+
+  postGithubComment:
+    - name: Comment PR
+      uses: thollander/actions-comment-pull-request@v1
+      needs: [android]
+      with:
+        message: |
+          Hello world ! ${{fromJSON(needs.android.outputs.HTML_PATH)}}
