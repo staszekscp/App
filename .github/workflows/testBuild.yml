@@ -70,7 +70,7 @@ jobs:
 
       - id: set_var
         run: |
-          content=`cat staszekscp/App/process.json`
+          content=`cat ./process.json`
           echo "::set-output name=packageJson::$content"
 
       - name: Comment PR
