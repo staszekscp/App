@@ -37,7 +37,7 @@ platform :android do
   end
 
   lane :test_return do 
-    return {
+    {
       apk_path: 'lane_context[SharedValues::S3_APK_OUTPUT_PATH]',
       html_path: 'lane_context[SharedValues::S3_HTML_OUTPUT_PATH]'
     }
