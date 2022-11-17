@@ -65,10 +65,7 @@ platform :android do
       app_directory: 'android',                       # Optional but nice if you want to put multiple apps in same bucket
     )
 
-    sh('echo "{
-      \"apk_path\": \"${lane_context[SharedValues::S3_APK_OUTPUT_PATH]}\",
-      \"html_path\": \"${lane_context[SharedValues::S3_HTML_OUTPUT_PATH]}\"
-    }" > ../paths.json')
+    sh('echo "{\"apk_path\": \"${lane_context[SharedValues::S3_APK_OUTPUT_PATH]}\",\"html_path\": \"${lane_context[SharedValues::S3_HTML_OUTPUT_PATH]}\"}" > ../paths.json')
   end
 
   desc "Build and upload app to Google Play"
