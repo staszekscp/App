@@ -2,6 +2,9 @@ name: Build and deploy android, desktop, iOS, and web clients for testing
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+     - test-workflow
   # pull_request:
   # types: [opened, synchronize]
 
