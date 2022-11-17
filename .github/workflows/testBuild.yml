@@ -34,14 +34,13 @@ jobs:
     # if: ${{ fromJSON(needs.validateActor.outputs.IS_DEPLOYER) }}
     runs-on: ubuntu-latest
     steps:
-      - run: ls 
 
-      - uses: Expensify/App/.github/actions/composite/setupNode@main
+      # - uses: Expensify/App/.github/actions/composite/setupNode@main
 
-      - uses: ruby/setup-ruby@eae47962baca661befdfd24e4d6c34ade04858f7
-        with:
-          ruby-version: '2.7'
-          bundler-cache: true
+      # - uses: ruby/setup-ruby@eae47962baca661befdfd24e4d6c34ade04858f7
+      #   with:
+      #     ruby-version: '2.7'
+      #     bundler-cache: true
 
       # - name: Decrypt keystore
       #   run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output my-upload-key.keystore my-upload-key.keystore.gpg
@@ -71,7 +70,7 @@ jobs:
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: |
-            Hello world ! ${{fromJson(steps.set_var.outputs.packageJson).html_path}}}}
+            'Hello world ! ${{fromJson(steps.set_var.outputs.packageJson).html_path}}''
 
   # postGithubComment:
   #   runs-on: ubuntu-latest
