@@ -96,6 +96,11 @@ jobs:
           S3_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           S3_BUCKET: ad-hoc-expensify-cash
           S3_REGION: us-east-1
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ios_paths.json
+          path: ./ios_paths.json
       
 
   postGithubComment:
