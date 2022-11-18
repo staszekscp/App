@@ -120,7 +120,7 @@ jobs:
           content_android="${content_android//$'\n'/'%0A'}"
           content_android="${content_android//$'\r'/'%0D'}"
           echo "::set-output name=android_paths::$content_android"
-          content_ios=`cat ./android_paths.json`
+          content_ios=`cat ./ios_paths.json`
           content_ios="${content_ios//'%'/'%25'}"
           content_ios="${content_ios//$'\n'/'%0A'}"
           content_ios="${content_ios//$'\r'/'%0D'}"
