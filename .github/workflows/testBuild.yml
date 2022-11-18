@@ -57,7 +57,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: android_paths.json
-          path: ./android_paths.json
+          path: ./paths
 
   iOS:
     name: Build and deploy iOS
@@ -100,13 +100,13 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: ios_paths.json
-          path: ./ios_paths.json
+          path: ./paths
       
 
   postGithubComment:
     runs-on: ubuntu-latest
     name: An example job to comment a PR
-    needs: [android, ios]
+    needs: [android, iOS]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -115,12 +115,12 @@ jobs:
 
       - id: set_var
         run: |
-          content_android=`cat ./android_paths.json`
+          content_android=`cat ./paths/android_paths.json`
           content_android="${content_android//'%'/'%25'}"
           content_android="${content_android//$'\n'/'%0A'}"
           content_android="${content_android//$'\r'/'%0D'}"
           echo "::set-output name=android_paths::$content_android"
-          content_ios=`cat ./ios_paths.json`
+          content_ios=`cat ./paths/ios_paths.json`
           content_ios="${content_ios//'%'/'%25'}"
           content_ios="${content_ios//$'\n'/'%0A'}"
           content_ios="${content_ios//$'\r'/'%0D'}"
