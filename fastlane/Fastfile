@@ -36,6 +36,15 @@ platform :android do
     )
   end
 
+  desc "Dummy for testing"
+  lane :dummy do
+
+    apk = "some path"
+    html = 'some html'
+
+    sh("echo '{\"apk_path\": \"#{apk}\",\"html_path\": \"#{html}\"}' > ../android_paths.json")
+  end
+
   desc "Build app for testing"
   lane :build_test do
     ENV["ENVFILE"]="e2e/.env.e2e"
@@ -112,6 +121,15 @@ platform :ios do
         workspace: "./ios/NewExpensify.xcworkspace",
         scheme: "NewExpensify"
     )
+  end
+
+  desc "Dummy for testing"
+  lane :dummy do
+
+    ipa = "some path"
+    html = 'some html'
+
+    sh("echo '{\"ipa_path\": \"#{ipa}\",\"html_path\": \"#{html}\"}' > ../ios_paths.json")
   end
 
   desc "Build app for testing"
