@@ -115,14 +115,19 @@ jobs:
 
       - id: set_var
         run: |
-          content=`cat ./android_paths.json`
-          content="${content//'%'/'%25'}"
-          content="${content//$'\n'/'%0A'}"
-          content="${content//$'\r'/'%0D'}"
-          echo "::set-output name=android_paths::$content"
+          content_android=`cat ./android_paths.json`
+          content_android="${content_android//'%'/'%25'}"
+          content_android="${content_android//$'\n'/'%0A'}"
+          content_android="${content_android//$'\r'/'%0D'}"
+          echo "::set-output name=android_paths::$content_android"
+          content_ios=`cat ./android_paths.json`
+          content_ios="${content_ios//'%'/'%25'}"
+          content_ios="${content_ios//$'\n'/'%0A'}"
+          content_ios="${content_ios//$'\r'/'%0D'}"
+          echo "::set-output name=ios_paths::$content_ios"
 
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: |
-            'Hello world ! ${{fromJson(steps.set_var.outputs.android_paths).html_path}}'
+            'Hello world ! ${{fromJson(steps.set_var.outputs.android_paths).html_path}} and ${{fromJson(steps.set_var.outputs.ios_paths).html_path}}'
