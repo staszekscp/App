@@ -1,7 +1,8 @@
 name: Build and deploy apps for testing
 
 on:
-  pull_request:
+  pull_request_target:
+   types: [opened, synchronize]
 
 env:
   DEVELOPER_DIR: /Applications/Xcode_14.0.1.app/Contents/Developer
