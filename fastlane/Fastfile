@@ -50,7 +50,7 @@ platform :android do
     ENV["ENVFILE"]="e2e/.env.e2e"
     gradle(
         project_dir: './android',
-        task: 'bundle',
+        task: 'assemble',
         build_type: 'Debug',
     )
 
@@ -73,7 +73,7 @@ platform :android do
 
     gradle(
         project_dir: './android',
-        task: 'assemble',
+        task: 'bundle',
         build_type: 'Release',
     )
 
