@@ -29,6 +29,7 @@ jobs:
       #   run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output android-fastlane-json-key.json android-fastlane-json-key.json.gpg
       #   env:
       #     LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
+      
 
       - name: Run Fastlane beta test
         id: runFastlaneBetaTest
