@@ -29,7 +29,7 @@ jobs:
       #   run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output android-fastlane-json-key.json android-fastlane-json-key.json.gpg
       #   env:
       #     LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
-      
+
 
       - name: Run Fastlane beta test
         id: runFastlaneBetaTest
@@ -108,17 +108,19 @@ jobs:
         continue-on-error: true
 
       - name: Deploy to S3 for internal testing
-        run: aws s3 cp --recursive --acl public-read "$GITHUB_WORKSPACE"/dist s3://ad-hoc-expensify-cash/web/"$PULL_REQUEST_NAME"
+        run: aws s3 cp --recursive --acl public-read "$GITHUB_WORKSPACE"/dist s3://aws-upload-test-fastlane/web/"$PULL_REQUEST_NAME"
         env:
           PULL_REQUEST_NAME: ${{ github.event.pull_request.title }}
 
   postGithubComment:
     runs-on: ubuntu-latest
     name: An example job to comment a PR
-    needs: [android, ios, web]
+    needs: [android]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - uses: actions/download-artifact@v2
 
@@ -130,14 +132,9 @@ jobs:
           content_android="${content_android//$'\n'/'%0A'}"
           content_android="${content_android//$'\r'/'%0D'}"
           echo "::set-output name=android_paths::$content_android"
-          content_ios=`cat ./ios/ios_paths.json`
-          content_ios="${content_ios//'%'/'%25'}"
-          content_ios="${content_ios//$'\n'/'%0A'}"
-          content_ios="${content_ios//$'\r'/'%0D'}"
-          echo "::set-output name=ios_paths::$content_ios"
 
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: |
-            'Hello world ! ${{fromJson(steps.set_var.outputs.android_paths).html_path}} and ${{fromJson(steps.set_var.outputs.ios_paths).html_path}}''
+            'Hello world ! ${{fromJson(steps.set_var.outputs.android_paths).html_path}}''
