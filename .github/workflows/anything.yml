@@ -67,7 +67,7 @@ jobs:
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v1
         with:
-          message: "| First Header  | Second Header |
+          message: '| First Header  | Second Header |
 | ------------- | ------------- |
 | Content Cell  | Content Cell  |
-| Content Cell  | Content Cell  |"
+| Content Cell  | Content Cell  |'
