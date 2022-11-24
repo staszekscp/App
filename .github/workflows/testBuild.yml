@@ -1,29 +1,29 @@
 name: Build and deploy apps for testing
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize]
 
 env:
   DEVELOPER_DIR: /Applications/Xcode_14.0.1.app/Contents/Developer
 
 jobs:
-  validateActor:
-    runs-on: ubuntu-latest
-    outputs:
-      IS_TEAM_MEMBER: ${{ fromJSON(steps.isUserDeployer.outputs.isTeamMember) }}
-    steps:
-      - id: isUserDeployer
-        uses: tspascoal/get-user-teams-membership@baf2e6adf4c3b897bd65a7e3184305c165aec872
-        with:
-          GITHUB_TOKEN: ${{ secrets.OS_BOTIFY_TOKEN }}
-          username: ${{ github.actor }}
-          team: mobile-deployers
+  # validateActor:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     IS_TEAM_MEMBER: ${{ fromJSON(steps.isUserDeployer.outputs.isTeamMember) }}
+  #   steps:
+  #     - id: isUserDeployer
+  #       uses: tspascoal/get-user-teams-membership@baf2e6adf4c3b897bd65a7e3184305c165aec872
+  #       with:
+  #         GITHUB_TOKEN: ${{ secrets.OS_BOTIFY_TOKEN }}
+  #         username: ${{ github.actor }}
+  #         team: mobile-deployers
 
   android:
     name: Build and deploy Android
-    needs: validateActor
-    if: ${{ fromJSON(needs.validateActor.outputs.IS_TEAM_MEMBER) }}
+    # needs: validateActor
+    # if: ${{ fromJSON(needs.validateActor.outputs.IS_TEAM_MEMBER) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8
@@ -38,15 +38,15 @@ jobs:
           ruby-version: '2.7'
           bundler-cache: true
 
-      - name: Decrypt keystore
-        run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output my-upload-key.keystore my-upload-key.keystore.gpg
-        env:
-          LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
+      # - name: Decrypt keystore
+      #   run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output my-upload-key.keystore my-upload-key.keystore.gpg
+      #   env:
+      #     LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
 
-      - name: Decrypt json key
-        run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output android-fastlane-json-key.json android-fastlane-json-key.json.gpg
-        env:
-          LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
+      # - name: Decrypt json key
+      #   run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output android-fastlane-json-key.json android-fastlane-json-key.json.gpg
+      #   env:
+      #     LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
 
       - name: Run Fastlane beta test
         id: runFastlaneBetaTest
@@ -65,8 +65,8 @@ jobs:
 
   iOS:
     name: Build and deploy iOS
-    needs: validateActor
-    if: ${{ fromJSON(needs.validateActor.outputs.IS_TEAM_MEMBER) }}
+    # needs: validateActor
+    # if: ${{ fromJSON(needs.validateActor.outputs.IS_TEAM_MEMBER) }}
     runs-on: macos-12
     steps:
       - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8
@@ -81,22 +81,22 @@ jobs:
           ruby-version: '2.7'
           bundler-cache: true
 
-      - name: Install cocoapods
-        uses: nick-invision/retry@0711ba3d7808574133d713a0d92d2941be03a350
-        with:
-          timeout_minutes: 10
-          max_attempts: 5
-          command: cd ios && pod install
+      # - name: Install cocoapods
+      #   uses: nick-invision/retry@0711ba3d7808574133d713a0d92d2941be03a350
+      #   with:
+      #     timeout_minutes: 10
+      #     max_attempts: 5
+      #     command: cd ios && pod install
 
-      - name: Decrypt profile
-        run: cd ios && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output chat_expensify_adhoc.mobileprovision.gpg chat_expensify_adhoc.mobileprovision.gpg.gpg
-        env:
-          LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
+      # - name: Decrypt profile
+      #   run: cd ios && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output chat_expensify_adhoc.mobileprovision.gpg chat_expensify_adhoc.mobileprovision.gpg.gpg
+      #   env:
+      #     LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
 
-      - name: Decrypt certificate
-        run: cd ios && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output Certificates.p12 Certificates.p12.gpg
-        env:
-          LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
+      # - name: Decrypt certificate
+      #   run: cd ios && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output Certificates.p12 Certificates.p12.gpg
+      #   env:
+      #     LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
 
       - name: Run Fastlane
         run: bundle exec fastlane ios build_test
@@ -158,11 +158,11 @@ jobs:
       - name: Read JSONs with paths
         id: set_var
         run: |
-          content_android=`cat ./android/android_paths.json`
+          content_android="$(cat ./android/android_paths.json)"
           content_android="${content_android//'%'/'%25'}"
           content_android="${content_android//$'\n'/'%0A'}"
           content_android="${content_android//$'\r'/'%0D'}"
-          echo "::set-output name=android_paths::$content_android"
+          echo "android_paths=$content_android" >> $GITHUB_OUTPUT
           content_ios=`cat ./ios/ios_paths.json`
           content_ios="${content_ios//'%'/'%25'}"
           content_ios="${content_ios//$'\n'/'%0A'}"
