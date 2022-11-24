@@ -35,16 +35,16 @@ jobs:
 
       - uses: ruby/setup-ruby@eae47962baca661befdfd24e4d6c34ade04858f7
         with:
-          ruby-version: "2.7"
+          ruby-version: '2.7'
           bundler-cache: true
 
       # - name: Decrypt keystore
-      #   run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output my-upload-key.keystore my-upload-key.keystore.gpg
+      #   run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase='$LARGE_SECRET_PASSPHRASE' --output my-upload-key.keystore my-upload-key.keystore.gpg
       #   env:
       #     LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
 
       # - name: Decrypt json key
-      #   run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output android-fastlane-json-key.json android-fastlane-json-key.json.gpg
+      #   run: cd android/app && gpg --quiet --batch --yes --decrypt --passphrase='$LARGE_SECRET_PASSPHRASE' --output android-fastlane-json-key.json android-fastlane-json-key.json.gpg
       #   env:
       #     LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
 
@@ -78,7 +78,7 @@ jobs:
 
       - uses: ruby/setup-ruby@eae47962baca661befdfd24e4d6c34ade04858f7
         with:
-          ruby-version: "2.7"
+          ruby-version: '2.7'
           bundler-cache: true
 
       # - name: Install cocoapods
@@ -89,12 +89,12 @@ jobs:
       #     command: cd ios && pod install
 
       # - name: Decrypt profile
-      #   run: cd ios && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output chat_expensify_adhoc.mobileprovision.gpg chat_expensify_adhoc.mobileprovision.gpg.gpg
+      #   run: cd ios && gpg --quiet --batch --yes --decrypt --passphrase='$LARGE_SECRET_PASSPHRASE' --output chat_expensify_adhoc.mobileprovision.gpg chat_expensify_adhoc.mobileprovision.gpg.gpg
       #   env:
       #     LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
 
       # - name: Decrypt certificate
-      #   run: cd ios && gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" --output Certificates.p12 Certificates.p12.gpg
+      #   run: cd ios && gpg --quiet --batch --yes --decrypt --passphrase='$LARGE_SECRET_PASSPHRASE' --output Certificates.p12 Certificates.p12.gpg
       #   env:
       #     LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
 
@@ -141,7 +141,7 @@ jobs:
   #       continue-on-error: true
 
   #     - name: Deploy to S3 for internal testing
-  #       run: aws s3 cp --recursive --acl public-read "$GITHUB_WORKSPACE"/dist s3://ad-hoc-expensify-cash/web/"$PULL_REQUEST_NAME"
+  #       run: aws s3 cp --recursive --acl public-read '$GITHUB_WORKSPACE'/dist s3://ad-hoc-expensify-cash/web/'$PULL_REQUEST_NAME'
   #       env:
   #         PULL_REQUEST_NAME: ${{ github.event.pull_request.title }}
 
@@ -158,16 +158,16 @@ jobs:
       - name: Read JSONs with paths
         id: set_var
         run: |
-          content_android="$(cat ./android/android_paths.json)"
-          content_android="${content_android//"%"/"%25"}"
-          content_android="${content_android//$"\n"/"%0A"}"
-          content_android="${content_android//$"\r"/"%0D"}"
-          echo "android_paths=$content_android" >> $GITHUB_OUTPUT
-          content_ios=`cat ./ios/ios_paths.json`
-          content_ios="${content_ios//"%"/"%25"}"
-          content_ios="${content_ios//$"\n"/"%0A"}"
-          content_ios="${content_ios//$"\r"/"%0D"}"
-          echo "::set-output name=ios_paths::$content_ios"
+          content_android='$(cat ./android/android_paths.json)'
+          content_android='${content_android//'%'/'%25'}'
+          content_android='${content_android//$'\n'/'%0A'}'
+          content_android='${content_android//$'\r'/'%0D'}'
+          echo 'android_paths=$content_android' >> $GITHUB_OUTPUT
+          content_ios='$(cat ./ios/ios_paths.json)'
+          content_ios='${content_ios//'%'/'%25'}'
+          content_ios='${content_ios//$'\n'/'%0A'}'
+          content_ios='${content_ios//$'\r'/'%0D'}'
+          echo '::set-output name=ios_paths::$content_ios'
 
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@8732291afbb10a0a98adbb80269d2aa5a732182c
