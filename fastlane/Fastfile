@@ -92,6 +92,7 @@ platform :ios do
   end
 
   desc "Build and upload app to TestFlight"
+  
   lane :beta do
     require 'securerandom'
     ENV["ENVFILE"]=".env.production"
