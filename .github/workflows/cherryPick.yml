@@ -30,6 +30,7 @@ jobs:
     uses: Expensify/App/.github/workflows/createNewVersion.yml@main
     secrets: inherit
 
+
   cherryPick:
     needs: [validateActor, createNewVersion]
     if: ${{ always() && fromJSON(needs.validateActor.outputs.IS_DEPLOYER) }}
