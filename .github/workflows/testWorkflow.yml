@@ -21,14 +21,14 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: test echo
-        run: echo "HAHAHA I CHANGED IT"
+        run: echo ${{ secrets.AWS_ACCESS_KEY_ID }}
 
       - name: Publish links to apps for download
         run: |
           gh pr comment --body \
           "| android :robot:  | iOS :apple: | 
           | ------------- | ------------- |
-          | HAHAHA I CHANGED IT  | https://ios.with.pl  |"
+          | https://android.with.pl  | https://ios.with.pl  |"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   withoutPermission:
@@ -48,6 +48,6 @@ jobs:
           gh pr comment --body \
           "| android :robot:  | iOS :apple: | 
           | ------------- | ------------- |
-          | HAHAHA I CHANGED IT  | https://ios.without.pl  |"
+          | https://android.without.pl  | https://ios.without.pl  |"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
