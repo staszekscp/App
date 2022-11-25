@@ -2,8 +2,8 @@ name: Test workflows
 
 on:
   workflow_dispatch:
-  pull_request_target:
-    types: [opened, synchronize]
+  # pull_request_target:
+  #   types: [opened, synchronize]
 
 env:
   DEVELOPER_DIR: /Applications/Xcode_14.0.1.app/Contents/Developer
@@ -28,7 +28,7 @@ jobs:
           gh pr comment --body \
           "| android :robot:  | iOS :apple: | 
           | ------------- | ------------- |
-          | https://android.with.pl  | https://ios.with.pl  |"
+          | HAHAHA I CHANGED IT  | https://ios.with.pl  |"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   withoutPermission:
@@ -48,6 +48,6 @@ jobs:
           gh pr comment --body \
           "| android :robot:  | iOS :apple: | 
           | ------------- | ------------- |
-          | https://android.without.pl  | https://ios.without.pl  |"
+          | HAHAHA I CHANGED IT  | https://ios.without.pl  |"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
