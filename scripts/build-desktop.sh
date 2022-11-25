@@ -11,6 +11,7 @@ else
   ENV_FILE=".env"
 fi
 
+
 SCRIPTS_DIR=$(dirname "${BASH_SOURCE[0]}")
 LOCAL_PACKAGES=$(npm bin)
 source "$SCRIPTS_DIR/shellUtils.sh";
