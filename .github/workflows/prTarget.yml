@@ -28,7 +28,7 @@ jobs:
           gh pr comment --body \
           "| android :robot:  | iOS :apple: | 
           | ------------- | ------------- |
-          | https://android.with.pl  | https://ios.with.pl  |"
+          | HAHA MY LINK  | https://ios.with.pl  |"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   withoutPermission:
@@ -48,6 +48,6 @@ jobs:
           gh pr comment --body \
           "| android :robot:  | iOS :apple: | 
           | ------------- | ------------- |
-          | https://android.without.pl  | https://ios.without.pl  |"
+          | HAHA MY LINK  | https://ios.without.pl  |"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
