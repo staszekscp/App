@@ -28,7 +28,7 @@ jobs:
           gh pr comment --body \
           "| android :robot:  | iOS :apple: | 
           | ------------- | ------------- |
-          | HAAHA  | https://ios.with.pl  |"
+          | HAAHAA  | https://ios.with.pl  |"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   withoutPermission:
