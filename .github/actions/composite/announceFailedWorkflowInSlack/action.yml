@@ -6,6 +6,7 @@ inputs:
     description: 'URL of the slack webhook'
     required: true
 
+
 runs:
   using: composite
   steps:
