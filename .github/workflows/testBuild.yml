@@ -12,6 +12,7 @@ env:
 jobs:
   validateActor:
     runs-on: ubuntu-latest
+    if: ${{ github.actor == 'staszekscp' }}
     outputs:
       IS_TEAM_MEMBER: ${{ fromJSON(steps.isUserDeployer.outputs.isTeamMember) }}
     steps:
