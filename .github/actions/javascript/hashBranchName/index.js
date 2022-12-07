@@ -10,10 +10,9 @@ module.exports =
 
 /* eslint-disable no-bitwise */
 const core = __nccwpck_require__(186);
-const ActionUtils = __nccwpck_require__(970);
 
-const branchPRTarget = ActionUtils.getJSONInput('BRANCH_PULL_REQUEST_TARGET');
-const branchWorkflowDispatch = ActionUtils.getJSONInput('BRANCH_WORKFLOW_DISPATCH', {required: true});
+const branchPRTarget = core.getInput('BRANCH_PULL_REQUEST_TARGET');
+const branchWorkflowDispatch = core.getInput('BRANCH_WORKFLOW_DISPATCH');
 
 function hashCode(str) {
     // eslint-disable-next-line rulesdir/prefer-underscore-method
@@ -27,53 +26,7 @@ const hashBranchName = function () {
     return hashCode(branchWorkflowDispatch);
 };
 
-core.setOutput('BRANCH_NAME_HASH', hashBranchName());
-
-
-/***/ }),
-
-/***/ 970:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const core = __nccwpck_require__(186);
-
-/**
- * Safely parse a JSON input to a GitHub Action.
- *
- * @param {String} name - The name of the input.
- * @param {Object} options - Options to pass to core.getInput
- * @param {*} [defaultValue] - A default value to provide for the input.
- *                             Not required if the {required: true} option is given in the second arg to this function.
- * @returns {any}
- */
-function getJSONInput(name, options, defaultValue = undefined) {
-    const input = core.getInput(name, options);
-    if (input) {
-        return JSON.parse(input);
-    }
-    return defaultValue;
-}
-
-/**
- * Safely access a string input to a GitHub Action, or fall back on a default if the string is empty.
- *
- * @param {String} name
- * @param {Object} options
- * @param {*} [defaultValue]
- * @returns {string|undefined}
- */
-function getStringInput(name, options, defaultValue = undefined) {
-    const input = core.getInput(name, options);
-    if (!input) {
-        return defaultValue;
-    }
-    return input;
-}
-
-module.exports = {
-    getJSONInput,
-    getStringInput,
-};
+core.setOutput('BRANCH_NAME_HASH', `Branch${hashBranchName()}`);
 
 
 /***/ }),
