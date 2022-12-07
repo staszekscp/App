@@ -23,7 +23,7 @@ jobs:
     needs: validateActor
     if: ${{ fromJSON(needs.validateActor.outputs.IS_TEAM_MEMBER) }}
     outputs:
-      BRANCH_NAME: ${{ fromJSON(steps.get_branch_name.outputs.BRANCH_NAME_HASH) }}
+      BRANCH_NAME: ${{ steps.get_branch_name.outputs.BRANCH_NAME_HASH }}
     steps:
       - name: Checkout
         uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8
