@@ -1,0 +1,15 @@
+name: 'Hash Branch Name'
+description: 'Hash Branch Name'
+inputs:
+  BRANCH_PULL_REQUEST_TARGET:
+    description: Branch name if the workflow was triggered by PR target
+    required: false
+  BRANCH_WORKFLOW_DISPATCH:
+    description: Branch name if the workflow was triggered by workflow_dispatch (if by PR target it's PR ref)
+    required: true
+outputs:
+  BRANCH_NAME_HASH:
+    description: Branch name hash
+runs:
+  using: 'node16'
+  main: './index.js'

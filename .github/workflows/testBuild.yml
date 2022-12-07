@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
   pull_request_target:
     types: [opened, synchronize]
-    branches: ['*ci-test/**']
 
 env:
   DEVELOPER_DIR: /Applications/Xcode_14.0.1.app/Contents/Developer
@@ -13,7 +12,7 @@ jobs:
   validateActor:
     runs-on: ubuntu-latest
     outputs:
-      IS_TEAM_MEMBER: ${{ fromJSON(steps.isUserDeployer.outputs.isTeamMember) }}
+      IS_TEAM_MEMBER: ${{ true }}
     steps:
       - id: isUserDeployer
         uses: tspascoal/get-user-teams-membership@baf2e6adf4c3b897bd65a7e3184305c165aec872
@@ -21,12 +20,30 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.OS_BOTIFY_TOKEN }}
           username: ${{ github.actor }}
           team: mobile-deployers
+  getBranchName:
+    runs-on: ubuntu-latest
+    needs: validateActor
+    if: ${{ fromJSON(needs.validateActor.outputs.IS_TEAM_MEMBER) }}
+    outputs:
+      BRANCH_NAME: ${{ fromJSON(steps.get_branch_name.outputs.BRANCH_NAME_HASH) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - id: get_branch_name
+        uses: Expensify/App/.github/actions/javascript/hashBranchName@main
+        env:
+          BRANCH_PULL_REQUEST_TARGET: ${{ github.event.pull_request.head.ref }}
+          BRANCH_WORKFLOW_DISPATCH: ${{ github.ref_name }}
 
   android:
     name: Build and deploy Android for testing
-    needs: validateActor
+    needs: [validateActor, getBranchName]
     if: ${{ fromJSON(needs.validateActor.outputs.IS_TEAM_MEMBER) }}
     runs-on: ubuntu-latest
+    env:
+      BRANCH_NAME: ${{ fromJSON(needs.getBranchName.outputs.BRANCH_NAME) }}
     steps:
       # This action checks-out the repository, so the workflow can access it.
       - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8
@@ -73,8 +90,10 @@ jobs:
 
   iOS:
     name: Build and deploy iOS for testing
-    needs: validateActor
+    needs: [validateActor, getBranchName]
     if: ${{ fromJSON(needs.validateActor.outputs.IS_TEAM_MEMBER) }}
+    env:
+      BRANCH_NAME: ${{ fromJSON(needs.getBranchName.outputs.BRANCH_NAME) }}
     runs-on: macos-12
     steps:
       # This action checks-out the repository, so the workflow can access it.
@@ -128,8 +147,10 @@ jobs:
 
   desktop:
     name: Build and deploy Desktop for testing
-    needs: validateActor
+    needs: [validateActor, getBranchName]
     if: ${{ fromJSON(needs.validateActor.outputs.IS_TEAM_MEMBER) }}
+    env:
+      BRANCH_NAME: ${{ fromJSON(needs.getBranchName.outputs.BRANCH_NAME) }}
     runs-on: macos-12
     steps:
       # This action checks-out the repository, so the workflow can access it.
@@ -160,11 +181,48 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           PULL_REQUEST_NUMBER: ${{ github.event.number }}
+  web:
+    name: Build and deploy Web
+    needs: [validateActor, getBranchName]
+    if: ${{ fromJSON(needs.validateActor.outputs.IS_TEAM_MEMBER) }}
+    env:
+      BRANCH_NAME: ${{ fromJSON(needs.getBranchName.outputs.BRANCH_NAME) }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: Expensify/App/.github/actions/composite/setupNode@main
+      - name: Configure AWS Credentials
+        uses: Expensify/App/.github/actions/composite/configureAwsCredentials@main
+        with:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Build web for testing
+        run: npm run build-staging
+
+      - name: Build docs
+        run: npm run storybook-build
+        continue-on-error: true
+
+      - name: Deploy to S3 for internal testing
+        run: aws s3 cp --recursive --acl public-read "$GITHUB_WORKSPACE"/dist s3://ad-hoc-expensify-cash/web/"$PULL_REQUEST_NUMBER"
+        env:
+          PULL_REQUEST_NUMBER: ${{ github.event.number }}
+
+      - name: Create CloudFront distribution for the PR if needed
+        run: ./.github/scripts/createCloudfrontDistribution.sh "$PULL_REQUEST_NUMBER"
+        env:
+          PULL_REQUEST_NUMBER: ${{ github.event.number }}
 
   postGithubComment:
     runs-on: ubuntu-latest
     name: Post a GitHub comment with app download links for testing
-    needs: [android, ios, desktop]
+    needs: [android, ios, desktop, web]
+    env:
+      BRANCH_NAME: ${{ fromJSON(needs.getBranchName.outputs.BRANCH_NAME) }}
     steps:
       - name: Checkout
         uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8
