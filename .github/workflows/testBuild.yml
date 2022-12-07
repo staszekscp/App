@@ -15,11 +15,7 @@ jobs:
       IS_TEAM_MEMBER: ${{ true }}
     steps:
       - id: isUserDeployer
-        uses: tspascoal/get-user-teams-membership@baf2e6adf4c3b897bd65a7e3184305c165aec872
-        with:
-          GITHUB_TOKEN: ${{ secrets.OS_BOTIFY_TOKEN }}
-          username: ${{ github.actor }}
-          team: mobile-deployers
+        run: echo "true"
   getBranchName:
     runs-on: ubuntu-latest
     needs: validateActor
