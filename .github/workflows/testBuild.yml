@@ -28,7 +28,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
       - id: get_branch_name
-        uses: Expensify/App/.github/actions/javascript/hashBranchName@main
+        uses: staszekscp/App/.github/actions/javascript/hashBranchName@main
         env:
           BRANCH_PULL_REQUEST_TARGET: ${{ github.event.pull_request.head.ref }}
           BRANCH_WORKFLOW_DISPATCH: ${{ github.ref_name }}
