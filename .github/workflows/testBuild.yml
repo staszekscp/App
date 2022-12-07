@@ -46,7 +46,6 @@ jobs:
       - name: Tets echo
         run: echo $BRANCH_NAME
 
-
   android:
     name: Build and deploy Android for testing
     needs: [validateActor, getBranchName]
