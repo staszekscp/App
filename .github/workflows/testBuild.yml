@@ -29,7 +29,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
       - id: get_branch_name
         uses: staszekscp/App/.github/actions/javascript/hashBranchName@main
-        env:
+        with:
           BRANCH_PULL_REQUEST_TARGET: ${{ github.event.pull_request.head.ref }}
           BRANCH_WORKFLOW_DISPATCH: ${{ github.ref_name }}
 

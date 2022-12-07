@@ -1,9 +1,8 @@
 /* eslint-disable no-bitwise */
 const core = require('@actions/core');
-const ActionUtils = require('../../../libs/ActionUtils');
 
-const branchPRTarget = ActionUtils.getJSONInput('BRANCH_PULL_REQUEST_TARGET');
-const branchWorkflowDispatch = ActionUtils.getJSONInput('BRANCH_WORKFLOW_DISPATCH', {required: true});
+const branchPRTarget = core.getInput('BRANCH_PULL_REQUEST_TARGET');
+const branchWorkflowDispatch = core.getInput('BRANCH_WORKFLOW_DISPATCH');
 
 function hashCode(str) {
     // eslint-disable-next-line rulesdir/prefer-underscore-method
