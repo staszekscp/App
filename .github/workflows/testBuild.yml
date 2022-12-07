@@ -34,6 +34,18 @@ jobs:
         with:
           BRANCH_PULL_REQUEST_TARGET: ${{ github.event.pull_request.head.ref }}
           BRANCH_WORKFLOW_DISPATCH: ${{ github.ref_name }}
+  echo:
+    name: See if hash is ok
+    needs: [validateActor, getBranchName]
+    if: ${{ fromJSON(needs.validateActor.outputs.IS_TEAM_MEMBER) }}
+    runs-on: ubuntu-latest
+    env:
+      BRANCH_NAME: ${{ needs.getBranchName.outputs.BRANCH_NAME }}
+    steps:
+      # This action checks-out the repository, so the workflow can access it.
+      - name: Tets echo
+        run: echo $BRANCH_NAME
+
 
   android:
     name: Build and deploy Android for testing
