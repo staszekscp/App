@@ -15,7 +15,7 @@ jobs:
       IS_TEAM_MEMBER: ${{ true }}
     steps:
       - id: isUserDeployer
-        run: echo "Am tim membra"
+        run: echo "Am tim membrar"
 
   getBranchHash:
     runs-on: ubuntu-latest
