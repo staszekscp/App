@@ -26,6 +26,11 @@ platform :android do
   end
 
   desc "Generate a new local APK"
+  lane :echo do
+    puts ENV["BRANCH_HASH"]
+  end
+
+  desc "Generate a new local APK"
   lane :build do
     ENV["ENVFILE"]=".env.production"
 
