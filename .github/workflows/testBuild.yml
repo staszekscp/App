@@ -2,6 +2,10 @@ name: Build and deploy apps for testing
 
 on:
   workflow_dispatch:
+    inputs:
+      pullRequestNumber:
+        description: Pull Request number for correct placement of apps
+        required: true
   pull_request_target:
     types: [opened, synchronize]
 
@@ -12,22 +16,27 @@ jobs:
   validateActor:
     runs-on: ubuntu-latest
     outputs:
-      IS_TEAM_MEMBER: ${{ true }}
+      MERGE_COMMIT: ${{ steps.getCPMergeCommit.outputs.MERGE_COMMIT_SHA }}
     steps:
       - id: isUserDeployer
-        run: echo "Am tim memba"
+        uses: staszekscp/App/.github/actions/javascript/getPullRequestDetails@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USER: ${{ github.actor }}
+          PULL_REQUEST_NUMBER: ${{ github.event.inputs.PULL_REQUEST_NUMBER }}
+
 
   getBranchHash:
     runs-on: ubuntu-latest
     needs: validateActor
-    if: ${{ fromJSON(needs.validateActor.outputs.IS_TEAM_MEMBER) }}
+    if: ${{ needs.validateActor.outputs.MERGE_COMMIT }}
     outputs:
       BRANCH_HASH: ${{ steps.get_branch_hash.outputs.BRANCH_NAME_HASH }}
     steps:
       - name: Checkout
         uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.ref || needs.validateActor.outputs.MERGE_COMMIT }}
       - id: get_branch_hash
         uses: staszekscp/App/.github/actions/javascript/hashBranchName@main
         with:
@@ -38,7 +47,7 @@ jobs:
   verifyHash:
     name: Build and deploy Android for testing
     needs: [validateActor, getBranchHash]
-    if: ${{ fromJSON(needs.validateActor.outputs.IS_TEAM_MEMBER) }}
+    if: ${{ needs.validateActor.outputs.MERGE_COMMIT }}
     runs-on: ubuntu-latest
     env:
       BRANCH_HASH: ${{ needs.getBranchHash.outputs.BRANCH_HASH }}
