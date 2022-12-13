@@ -19,7 +19,7 @@ jobs:
       MERGE_COMMIT: ${{ steps.getCPMergeCommit.outputs.MERGE_COMMIT_SHA }}
     steps:
       - id: sth
-        run: gh pr checkout ${{ github.event.inputs.PULL_REQUEST_NUMBER }}
+        run: gh pr checkout ${{ github.event.inputs.pullRequestNumber }}
       - id: getCPMergeCommit
         run: echo "MERGE_COMMIT_SHA=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
