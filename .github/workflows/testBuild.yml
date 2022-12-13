@@ -77,7 +77,7 @@ jobs:
           ref: ${{ github.head_ref || needs.getBranchHeadRef.outputs.REF }}
           fetch-depth: 0
       - name: Publish links to apps for download
-        uses: Expensify/App/.github/actions/javascript/isPullRequestMergeable@main
+        uses: staszekscp/App/.github/actions/javascript/createTestBuildComment@main
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PULL_REQUEST_NUMBER: ${{ github.event.number || github.event.inputs.pullRequestNumber }}
