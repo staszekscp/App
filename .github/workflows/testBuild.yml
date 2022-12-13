@@ -62,6 +62,7 @@ jobs:
           emojis: '+1, laugh'
           body-include: 'Use the links below to test this build in android and iOS. Happy testing!'
           number: ${{ github.event.number || github.event.inputs.pullRequestNumber }}
+          delete: true
       - name: Publish links to apps for download
         run: |
           gh pr comment --body \
