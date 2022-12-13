@@ -18,12 +18,10 @@ jobs:
     outputs:
       MERGE_COMMIT: ${{ steps.getCPMergeCommit.outputs.MERGE_COMMIT_SHA }}
     steps:
-      - id: isUserDeployer
-        uses: staszekscp/App/.github/actions/javascript/getPullRequestDetails@main
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          USER: ${{ github.actor }}
-          PULL_REQUEST_NUMBER: ${{ github.event.inputs.PULL_REQUEST_NUMBER }}
+      - id: sth
+        run: gh pr checkout ${{ github.event.inputs.PULL_REQUEST_NUMBER }}
+      - id: getCPMergeCommit
+        run: echo "MERGE_COMMIT_SHA=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
 
   getBranchHash:
