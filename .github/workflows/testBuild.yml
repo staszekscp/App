@@ -45,7 +45,6 @@ jobs:
   verifyHash:
     name: Build and deploy Android for testing
     needs: [validateActor, getBranchHeadRef]
-    if: ${{ needs.validateActor.outputs.MERGE_COMMIT }}
     runs-on: ubuntu-latest
     env:
       BRANCH_HASH: ${{ needs.getBranchHeadRef.outputs.HEAD_SHA }}
