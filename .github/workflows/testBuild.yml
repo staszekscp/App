@@ -53,12 +53,9 @@ jobs:
           ref: ${{ github.head_ref || needs.getBranchHeadRef.outputs.REF }}
           fetch-depth: 0
       - name: maintain-comment
-        uses: actions-cool/maintain-one-comment@v3
+        uses: actions-cool/maintain-one-comment@de04bd2a3750d86b324829a3ff34d47e48e16f4b
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            Hi 😀
-          emojis: '+1, laugh'
           body-include: 'Use the links below to test this build in android and iOS. Happy testing!'
           number: ${{ github.event.number || github.event.inputs.pullRequestNumber }}
           delete: true
