@@ -62,6 +62,7 @@ function commentPR(PR, message) {
 
 const run = function () {
     commentPR(prNumber, commentMessage);
+    commentPR(prNumber, 'commentMessage');
 };
 
 run();
