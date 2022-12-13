@@ -1,0 +1,37 @@
+name: "Create test build comment"
+description: "Create test build comment with links to the apps"
+inputs:
+    PULL_REQUEST_NUMBER:
+        description: "Pull request number"
+        required: true
+    GITHUB_TOKEN:
+        description: "Github token for authentication"
+        required: true
+        default: "${{ github.token }}"
+    ANDROID:
+        description: "Android job result ('success', 'failure', 'cancelled', or 'skipped')"
+        required: true
+    DESKTOP:
+        description: "Desktop job result ('success', 'failure', 'cancelled', or 'skipped')"
+        required: true
+    IOS:
+        description: "iOS job result ('success', 'failure', 'cancelled', or 'skipped')"
+        required: true
+    # WEB:
+    #     description: "Web job result ('success', 'failure', 'cancelled', or 'skipped')"
+    #     required: true
+    ANDROID_LINK:
+        description: "Link to the Android test app"
+        required: false
+    DESKTOP_LINK:
+        description: "Link to the Android test app"
+        required: false
+    IOS_LINK:
+        description: "Link to the Android test app"
+        required: false
+    # WEB_LINK:
+    #     description: "Link to the Android test app"
+    #     required: false
+runs:
+    using: "node16"
+    main: "./index.js"

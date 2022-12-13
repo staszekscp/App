@@ -21,7 +21,6 @@ jobs:
       - name: Run echo
         run: echo "Starts"
 
-
   getBranchHeadRef:
     runs-on: ubuntu-latest
     needs: validateActor
@@ -60,12 +59,6 @@ jobs:
           body-include: 'Use the links below to test this build in android and iOS. Happy testing!'
           number: ${{ github.event.number || github.event.inputs.pullRequestNumber }}
           delete: true
-      - name: Publish links to apps for download
-        run: |
-          gh pr comment --body \
-          ":test_tube::test_tube: Use the links below to test this build in android and iOS. Happy testing! :test_tube::test_tube:"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   throwFailure:
     name: Build and deploy Android for testing
@@ -79,6 +72,19 @@ jobs:
     if: ${{ failure() }}
     needs: [validateActor, getBranchHeadRef, verifyHash, throwFailure]
     steps:
-      - name: Run echo
-        run: echo ${{needs.verifyHash.status}}
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8
+        with:
+          ref: ${{ github.head_ref || needs.getBranchHeadRef.outputs.REF }}
+          fetch-depth: 0
+      - name: Publish links to apps for download
+        uses: Expensify/App/.github/actions/javascript/isPullRequestMergeable@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PULL_REQUEST_NUMBER: ${{ github.event.number || github.event.inputs.pullRequestNumber }}
+          ANDROID: ${{ needs.throwFailure.result }}
+          DESKTOP: ${{ needs.throwFailure.result }}
+          IOS: ${{ needs.throwFailure.result }}
+          ANDROID_LINK: ""
+          DESKTOP_LINK: "sadadsfdfgdgrgdf"
+          IOS_LINK: "asddsfdfg"
   

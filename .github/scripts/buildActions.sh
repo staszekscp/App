@@ -14,6 +14,7 @@ declare -r GITHUB_ACTIONS=(
     "$ACTIONS_DIR/checkBundleVersionStringMatch/checkBundleVersionStringMatch.js"
     "$ACTIONS_DIR/checkDeployBlockers/checkDeployBlockers.js"
     "$ACTIONS_DIR/createOrUpdateStagingDeploy/createOrUpdateStagingDeploy.js"
+    "$ACTIONS_DIR/createTestBuildComment/createTestBuildComment.js"
     "$ACTIONS_DIR/getDeployPullRequestList/getDeployPullRequestList.js"
     "$ACTIONS_DIR/getPullRequestDetails/getPullRequestDetails.js"
     "$ACTIONS_DIR/getReleaseBody/getReleaseBody.js"
