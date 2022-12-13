@@ -39,6 +39,8 @@ jobs:
           set -e
           gh pr checkout ${{ github.event.inputs.pullRequestNumber }}
           echo "HEAD_SHA=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
   verifyHash:
     name: Build and deploy Android for testing
