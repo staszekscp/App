@@ -67,4 +67,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  throwFailure:
+    name: Build and deploy Android for testing
+    needs: [validateActor, getBranchHeadRef]
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1
+
+  catchFailure:
+    runs-on: ubuntu-latest
+    if: ${{ failure() }}
+    needs: [validateActor, getBranchHeadRef, verifyHash, throwFailure]
+    steps:
+      - name: Run echo
+        run: echo ${{needs.verifyHash.status}}
   
