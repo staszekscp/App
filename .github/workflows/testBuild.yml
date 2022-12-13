@@ -20,6 +20,8 @@ jobs:
     outputs:
       MERGE_COMMIT: ${{ steps.getCPMergeCommit.outputs.MERGE_COMMIT_SHA }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8
       - id: sth
         run: gh pr checkout ${{ github.event.inputs.pullRequestNumber }}
       - id: getCPMergeCommit
