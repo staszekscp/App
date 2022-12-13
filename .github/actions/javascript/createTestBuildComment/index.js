@@ -53,7 +53,9 @@ commentMessage += `| ![Android](${getQRCode(androidResult, androidLink)}) | ![iO
  */
 function commentPR(PR, message) {
     return GithubUtils.createComment(context.repo.repo, PR, message)
-        .then(() => console.log(`Comment created on #${PR} successfully 🎉`))
+        .then(() => {
+            console.log(message);
+            console.log(`Comment created on #${PR} successfully 🎉`)})
         .catch((err) => {
             console.log(`Unable to write comment on #${PR} 😞`);
             core.setFailed(err.message);
