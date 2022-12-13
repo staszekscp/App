@@ -52,6 +52,14 @@ jobs:
         with:
           ref: ${{ github.head_ref || needs.getBranchHeadRef.outputs.REF }}
           fetch-depth: 0
+      - name: maintain-comment
+        uses: actions-cool/maintain-one-comment@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            Hi 😀
+          emojis: '+1, laugh'
+          body-include: 'Use the links below to test this build in android and iOS. Happy testing!'
       - name: Publish links to apps for download
         run: |
           gh pr comment --body \
