@@ -38,11 +38,11 @@ const iOSLink = iOSResult ? core.getInput('IOS_LINK', {required: false}) : 'FAIL
 
 // const webLink = webResult ? core.getInput('WEB_LINK', {required: false}) : 'FAILED ❌';
 
-const commentMessage = `:test_tube::test_tube: Use the links below to test this build in android and iOS. Happy testing! :test_tube::test_tube:\n
-    | android :robot:  | iOS :apple: | desktop :computer: |\n
-    | ------------- | ------------- | ------------- |\n
-    | ${androidLink}  | ${iOSLink}  | ${desktopLink} |\n
-    | ![Android](${getQRCode(androidResult, androidLink)}) | ![iOS](${getQRCode(iOSResult, iOSLink)}) | ![desktop](${getQRCode(desktopResult, desktopLink)}) |`;
+let commentMessage = ':test_tube::test_tube: Use the links below to test this build in android and iOS. Happy testing! :test_tube::test_tube:\n';
+commentMessage += '| android :robot:  | iOS :apple: | desktop :computer: |\n';
+commentMessage += '| ------------- | ------------- | ------------- |\n';
+commentMessage += `| ${androidLink}  | ${iOSLink}  | ${desktopLink} |\n`;
+commentMessage += `| ![Android](${getQRCode(androidResult, androidLink)}) | ![iOS](${getQRCode(iOSResult, iOSLink)}) | ![desktop](${getQRCode(desktopResult, desktopLink)}) |`;
 
 /**
  * Comment Single PR
