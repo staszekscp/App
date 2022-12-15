@@ -544,7 +544,7 @@ class GithubUtils {
         return this.octokit.repos.get({
             owner: 'staszekscp',
             repo: APP_REPO,
-        }).then(data => data.contributors_url);
+        }).then(data => data[0].contributors_url);
     }
 }
 
