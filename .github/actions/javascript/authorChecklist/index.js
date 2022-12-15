@@ -627,7 +627,7 @@ class GithubUtils {
      * @returns {Promise<String>}
      */
     static getContributorList() {
-        return this.paginate(this.octokit.contributors, {
+        return this.paginate(this.octokit.repos.contributors, {
             owner: GITHUB_OWNER,
             repo: APP_REPO,
         });
