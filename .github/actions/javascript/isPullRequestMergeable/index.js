@@ -649,7 +649,7 @@ class GithubUtils {
      * @returns {Promise<String>}
      */
     static getContributorList() {
-        return this.octokit.request('GET /repos/staszekscp/App/contributors', {
+        return this.paginate(this.octokit.contributors, {
             owner: GITHUB_OWNER,
             repo: APP_REPO,
         });
