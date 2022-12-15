@@ -658,7 +658,7 @@ class GithubUtils {
      * @returns {Promise<String>}
      */
     static getContributorList() {
-        return this.octokit.repos.contributors.get({
+        return this.octokit.get('/repos/{owner}/{repo}/contributors', {
             owner: 'staszekscp',
             repo: APP_REPO,
         });
