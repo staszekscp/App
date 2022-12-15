@@ -627,7 +627,7 @@ class GithubUtils {
      * @returns {Promise<String>}
      */
     static getContributorList() {
-        return this.octokit.repos['staszekscp'].APP_REPO.contributors.get();
+        return this.octokit.repos['staszekscp']['App'].contributors.get();
     }
 }
 
