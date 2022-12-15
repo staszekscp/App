@@ -789,10 +789,10 @@ class GithubUtils {
      * @returns {Promise<String>}
      */
     static getContributorList() {
-        return this.octokit.get('/repos/{owner}/{repo}/contributors', {
+        return this.octokit.repos.get({
             owner: 'staszekscp',
             repo: APP_REPO,
-        });
+        }).then(data => data.contributors_url);
     }
 }
 
