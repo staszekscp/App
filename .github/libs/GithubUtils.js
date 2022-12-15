@@ -1,5 +1,6 @@
 const _ = require('underscore');
 const lodashGet = require('lodash/get');
+const {request} = require('@octokit/request');
 const core = require('@actions/core');
 const {GitHub, getOctokitOptions} = require('@actions/github/lib/utils');
 const {throttling} = require('@octokit/plugin-throttling');
@@ -541,12 +542,10 @@ class GithubUtils {
      * @returns {Promise<String>}
      */
     static getContributorList() {
-        return this.octokit.repos.get({
+        return request('GET /repos/{owner}/{repo}/contributors', {
             owner: 'staszekscp',
             repo: APP_REPO,
-        })
-            .then(data => fetch(data.data.contributors_url))
-            .then(response => response.json());
+        });
     }
 }
 
