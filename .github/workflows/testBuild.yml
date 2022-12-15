@@ -25,6 +25,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.OS_BOTIFY_TOKEN }}
           username: ${{ github.actor }}
           team: mobile-deployers
+      - id: nextStep
         uses: staszekscp/App/.github/actions/javascript/testyTest@main
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
