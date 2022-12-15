@@ -20,12 +20,6 @@ jobs:
       IS_TEAM_MEMBER: ${{ fromJSON(steps.isUserDeployer.outputs.isTeamMember) }}
     steps:
       - id: isUserDeployer
-        uses: tspascoal/get-user-teams-membership@baf2e6adf4c3b897bd65a7e3184305c165aec872
-        with:
-          GITHUB_TOKEN: ${{ secrets.OS_BOTIFY_TOKEN }}
-          username: ${{ github.actor }}
-          team: mobile-deployers
-      - id: nextStep
         uses: staszekscp/App/.github/actions/javascript/testyTest@main
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
