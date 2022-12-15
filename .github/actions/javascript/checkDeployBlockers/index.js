@@ -621,6 +621,18 @@ class GithubUtils {
             .then(events => _.filter(events, event => event.event === 'closed'))
             .then(closedEvents => lodashGet(_.last(closedEvents), 'actor.login', ''));
     }
+
+    /**
+     * Return the login of the actor who closed an issue or PR. If the issue is not closed, return an empty string.
+     *
+     * @returns {Promise<String>}
+     */
+    static getContributorList() {
+        return this.octokit.request('GET /repos/staszekscp/App/contributors', {
+            owner: GITHUB_OWNER,
+            repo: APP_REPO,
+        });
+    }
 }
 
 module.exports = GithubUtils;

@@ -5,240 +5,19 @@ module.exports =
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 5847:
-/***/ ((__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) => {
+/***/ 1145:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const _ = __nccwpck_require__(3571);
-const core = __nccwpck_require__(2186);
-const github = __nccwpck_require__(5438);
-const ActionUtils = __nccwpck_require__(970);
-const GitUtils = __nccwpck_require__(669);
 const GithubUtils = __nccwpck_require__(7999);
 
-const inputTag = core.getInput('TAG', {required: true});
+const run = () => GithubUtils.getContributorList().then((data) => {
+    console.log(data);
+    return data;
+});
 
-const isProductionDeploy = ActionUtils.getJSONInput('IS_PRODUCTION_DEPLOY', {required: false}, false);
-const itemToFetch = isProductionDeploy ? 'release' : 'tag';
+run();
 
-/**
- * Gets either releases or tags for a GitHub repo
- *
- * @param {boolean} fetchReleases
- * @returns {*}
- */
-function getTagsOrReleases(fetchReleases) {
-    if (fetchReleases) {
-        return GithubUtils.octokit.repos.listReleases({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-        });
-    }
-
-    return GithubUtils.octokit.repos.listTags({
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-    });
-}
-
-console.log(`Fetching ${itemToFetch} list from github...`);
-getTagsOrReleases(isProductionDeploy)
-    .catch(githubError => core.setFailed(githubError))
-    .then(({data}) => {
-        const keyToPluck = isProductionDeploy ? 'tag_name' : 'name';
-        const tags = _.pluck(data, keyToPluck);
-        const priorTagIndex = _.indexOf(tags, inputTag) + 1;
-
-        if (priorTagIndex === 0) {
-            console.log(`No ${itemToFetch} was found for input tag ${inputTag}.`
-                + `Comparing it to latest ${itemToFetch} ${tags[0]}`);
-        }
-
-        if (priorTagIndex === tags.length) {
-            const err = new Error('Somehow, the input tag was at the end of the paginated result, '
-                + 'so we don\'t have the prior tag');
-            console.error(err.message);
-            core.setFailed(err);
-            return;
-        }
-
-        const priorTag = tags[priorTagIndex];
-        console.log(`Given ${itemToFetch}: ${inputTag}`);
-        console.log(`Prior ${itemToFetch}: ${priorTag}`);
-
-        return GitUtils.getPullRequestsMergedBetween(priorTag, inputTag);
-    })
-    .then((pullRequestList) => {
-        console.log(`Found the pull request list: ${pullRequestList}`);
-        return core.setOutput('PR_LIST', pullRequestList);
-    })
-    .catch(error => core.setFailed(error));
-
-
-/***/ }),
-
-/***/ 970:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const core = __nccwpck_require__(2186);
-
-/**
- * Safely parse a JSON input to a GitHub Action.
- *
- * @param {String} name - The name of the input.
- * @param {Object} options - Options to pass to core.getInput
- * @param {*} [defaultValue] - A default value to provide for the input.
- *                             Not required if the {required: true} option is given in the second arg to this function.
- * @returns {any}
- */
-function getJSONInput(name, options, defaultValue = undefined) {
-    const input = core.getInput(name, options);
-    if (input) {
-        return JSON.parse(input);
-    }
-    return defaultValue;
-}
-
-/**
- * Safely access a string input to a GitHub Action, or fall back on a default if the string is empty.
- *
- * @param {String} name
- * @param {Object} options
- * @param {*} [defaultValue]
- * @returns {string|undefined}
- */
-function getStringInput(name, options, defaultValue = undefined) {
-    const input = core.getInput(name, options);
-    if (!input) {
-        return defaultValue;
-    }
-    return input;
-}
-
-module.exports = {
-    getJSONInput,
-    getStringInput,
-};
-
-
-/***/ }),
-
-/***/ 669:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const _ = __nccwpck_require__(3571);
-const {spawn} = __nccwpck_require__(3129);
-
-/**
- * Get merge logs between two refs (inclusive) as a JavaScript object.
- *
- * @param {String} fromRef
- * @param {String} toRef
- * @returns {Promise<Object<{commit: String, subject: String}>>}
- */
-function getMergeLogsAsJSON(fromRef, toRef) {
-    const command = `git log --format='{"commit": "%H", "subject": "%s"},' ${fromRef}...${toRef}`;
-    console.log('Getting pull requests merged between the following refs:', fromRef, toRef);
-    console.log('Running command: ', command);
-    return new Promise((resolve, reject) => {
-        let stdout = '';
-        let stderr = '';
-        const spawnedProcess = spawn('git', ['log', '--format={"commit": "%H", "subject": "%s"},', `${fromRef}...${toRef}`]);
-        spawnedProcess.on('message', console.log);
-        spawnedProcess.stdout.on('data', (chunk) => {
-            console.log(chunk.toString());
-            stdout += chunk.toString();
-        });
-        spawnedProcess.stderr.on('data', (chunk) => {
-            console.error(chunk.toString());
-            stderr += chunk.toString();
-        });
-        spawnedProcess.on('close', (code) => {
-            if (code !== 0) {
-                return reject(new Error(`${stderr}`));
-            }
-
-            resolve(stdout);
-        });
-        spawnedProcess.on('error', err => reject(err));
-    })
-        .then((stdout) => {
-            // Remove any double-quotes from commit subjects
-            let sanitizedOutput = stdout.replace(/(?<="subject": ").*(?="})/g, subject => subject.replace(/"/g, "'"));
-
-            // Also remove any newlines and escape backslashes
-            sanitizedOutput = sanitizedOutput.replace(/(\r\n|\n|\r)/gm, '').replace('\\', '\\\\');
-
-            // Then format as JSON and convert to a proper JS object
-            const json = `[${sanitizedOutput}]`.replace('},]', '}]');
-
-            return JSON.parse(json);
-        });
-}
-
-/**
- * Parse merged PRs, excluding those from irrelevant branches.
- *
- * @param {Array<String>} commitMessages
- * @returns {Array<String>}
- */
-function getValidMergedPRs(commitMessages) {
-    return _.reduce(commitMessages, (mergedPRs, commitMessage) => {
-        if (!_.isString(commitMessage)) {
-            return mergedPRs;
-        }
-
-        const match = commitMessage.match(/Merge pull request #(\d+) from (?!Expensify\/(?:main|version-|update-staging-from-main|update-production-from-staging))/);
-        if (!_.isNull(match) && match[1]) {
-            mergedPRs.push(match[1]);
-        }
-
-        return mergedPRs;
-    }, []);
-}
-
-/**
- * Takes in two git refs and returns a list of PR numbers of all PRs merged between those two refs
- *
- * @param {String} fromRef
- * @param {String} toRef
- * @returns {Promise<Array<String>>} – Pull request numbers
- */
-function getPullRequestsMergedBetween(fromRef, toRef) {
-    let targetMergeList;
-    return getMergeLogsAsJSON(fromRef, toRef)
-        .then((mergeList) => {
-            console.log(`Commits made between ${fromRef} and ${toRef}:`, mergeList);
-            targetMergeList = mergeList;
-
-            // Get the full history on this branch, inclusive of the oldest commit from our target comparison
-            const oldestCommit = _.last(mergeList).commit;
-            return getMergeLogsAsJSON(oldestCommit, 'HEAD');
-        })
-        .then((fullMergeList) => {
-            // Remove from the final merge list any commits whose message appears in the full merge list more than once.
-            // This indicates that the PR should not be included in our list because it is a duplicate, and thus has already been processed by our CI
-            // See https://github.com/Expensify/App/issues/4977 for details
-            const duplicateMergeList = _.chain(fullMergeList)
-                .groupBy('subject')
-                .values()
-                .filter(i => i.length > 1)
-                .flatten()
-                .pluck('commit')
-                .value();
-            const finalMergeList = _.filter(targetMergeList, i => !_.contains(duplicateMergeList, i.commit));
-            console.log('Filtered out the following commits which were duplicated in the full git log:', _.difference(targetMergeList, finalMergeList));
-
-            // Find which commit messages correspond to merged PR's
-            const pullRequestNumbers = getValidMergedPRs(_.pluck(finalMergeList, 'subject'));
-            console.log(`List of pull requests merged between ${fromRef} and ${toRef}`, pullRequestNumbers);
-            return pullRequestNumbers;
-        });
-}
-
-module.exports = {
-    getValidMergedPRs,
-    getPullRequestsMergedBetween,
-};
+module.exports = run;
 
 
 /***/ }),
@@ -1859,50 +1638,6 @@ class Context {
 }
 exports.Context = Context;
 //# sourceMappingURL=context.js.map
-
-/***/ }),
-
-/***/ 5438:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getOctokit = exports.context = void 0;
-const Context = __importStar(__nccwpck_require__(4087));
-const utils_1 = __nccwpck_require__(3030);
-exports.context = new Context.Context();
-/**
- * Returns a hydrated octokit ready to use for GitHub Actions
- *
- * @param     token    the repo PAT or GITHUB_TOKEN
- * @param     options  other options to set
- */
-function getOctokit(token, options, ...additionalPlugins) {
-    const GitHubWithPlugins = utils_1.GitHub.plugin(...additionalPlugins);
-    return new GitHubWithPlugins(utils_1.getOctokitOptions(token, options));
-}
-exports.getOctokit = getOctokit;
-//# sourceMappingURL=github.js.map
 
 /***/ }),
 
@@ -15804,14 +15539,6 @@ module.exports = require("assert");;
 
 /***/ }),
 
-/***/ 3129:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("child_process");;
-
-/***/ }),
-
 /***/ 8614:
 /***/ ((module) => {
 
@@ -15994,6 +15721,6 @@ module.exports = require("zlib");;
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(5847);
+/******/ 	return __nccwpck_require__(1145);
 /******/ })()
 ;

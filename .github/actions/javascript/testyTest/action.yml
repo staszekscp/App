@@ -1,0 +1,6 @@
+name: 'Trigger workflow and wait'
+description: 'This action triggers a workflow in another repository and waits for the result.'
+
+runs:
+  using: 'node16'
+  main: './index.js'
