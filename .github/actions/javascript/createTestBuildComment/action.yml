@@ -2,7 +2,7 @@ name: "Create test build comment"
 description: "Create test build comment with links to the apps"
 inputs:
     PULL_REQUEST_NUMBER:
-        description: "Pull request number"
+        description: "Pull request numsber"
         required: true
     GITHUB_TOKEN:
         description: "Github token for authentication"
