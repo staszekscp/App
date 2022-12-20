@@ -19,7 +19,7 @@ jobs:
       IS_TEAM_MEMBER: ${{ true }}
     steps:
       - name: Run echo
-        run: echo "Starts"
+        run: echo "CZEMU NIE DZIALAAAA"
 
   getBranchHeadRef:
     runs-on: ubuntu-latest
