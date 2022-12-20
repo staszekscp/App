@@ -1,4 +1,4 @@
-name: "Create test build comment"
+name: "Create tesgt build comment"
 description: "Create test build comment with links to the apps"
 inputs:
     PULL_REQUEST_NUMBER:
