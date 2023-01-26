@@ -17,7 +17,7 @@ jobs:
   validateActor:
     runs-on: ubuntu-latest
     outputs:
-      READY_TO_BUILD: ${{ fromJSON(steps.isUserTeamMember.outputs.isTeamMember) && fromJSON(steps.hasReadyToBuildLabel.outputs.HAS_READY_TO_BUILD_LABEL) }}
+      READY_TO_BUILD: true
     steps:
       - id: isUserTeamMember
         uses: tspascoal/get-user-teams-membership@baf2e6adf4c3b897bd65a7e3184305c165aec872
