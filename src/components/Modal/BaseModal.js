@@ -25,6 +25,8 @@ const propTypes = {
 const defaultProps = {
     ...modalDefaultProps,
     forwardedRef: () => {},
+    coverScreen: true,
+    customBackdrop: null,
 };
 
 function BaseModal({
@@ -49,6 +51,8 @@ function BaseModal({
     onLayout,
     avoidKeyboard,
     forwardedRef,
+    coverScreen,
+    customBackdrop,
     children,
 }) {
     const {windowWidth, windowHeight, isSmallScreenWidth} = useWindowDimensions();
@@ -92,6 +96,9 @@ function BaseModal({
 
             // To prevent closing any modal already unmounted when this modal still remains as visible state
             Modal.setCloseModal(null);
+            if (shouldSetModalVisibility) {
+                Modal.setModalVisibility(false);
+            }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [],
@@ -182,7 +189,8 @@ function BaseModal({
             backdropOpacity={hideBackdrop ? 0 : variables.overlayOpacity}
             backdropTransitionOutTiming={0}
             hasBackdrop={fullscreen}
-            coverScreen={fullscreen}
+            coverScreen={!isSmallScreenWidth || coverScreen}
+            customBackdrop={customBackdrop && customBackdrop(handleBackdropPress)}
             style={modalStyle}
             deviceHeight={windowHeight}
             deviceWidth={windowWidth}

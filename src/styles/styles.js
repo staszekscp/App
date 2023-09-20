@@ -2885,6 +2885,16 @@ const styles = (theme) => ({
         height: '100%',
     },
 
+    modalBackdropWeb: {
+        position: 'fixed',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        opacity: variables.overlayOpacity,
+        backgroundColor: defaultTheme.overlay,
+    },
+
     fullscreenCard: {
         position: 'absolute',
         left: 0,

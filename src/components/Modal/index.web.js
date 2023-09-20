@@ -1,4 +1,6 @@
 import React, {useState} from 'react';
+// eslint-disable-next-line no-restricted-imports
+import {Pressable} from 'react-native';
 import withWindowDimensions from '../withWindowDimensions';
 import BaseModal from './BaseModal';
 import {propTypes, defaultProps} from './modalPropTypes';
@@ -6,6 +8,7 @@ import * as StyleUtils from '../../styles/StyleUtils';
 import themeColors from '../../styles/themes/default';
 import StatusBar from '../../libs/StatusBar';
 import CONST from '../../CONST';
+import styles from '../../styles/styles';
 
 function Modal(props) {
     const [previousStatusBarColor, setPreviousStatusBarColor] = useState();
@@ -40,6 +43,15 @@ function Modal(props) {
             onModalHide={hideModal}
             onModalShow={showModal}
             avoidKeyboard={false}
+            coverScreen={false}
+            customBackdrop={(onBackdropPress) => (
+                <Pressable
+                    onPress={onBackdropPress}
+                    style={styles.modalBackdropWeb}
+                    accessibilityLabel="backdrop"
+                    accessibilityRole={CONST.ACCESSIBILITY_ROLE.ADJUSTABLE}
+                />
+            )}
         >
             {props.children}
         </BaseModal>
